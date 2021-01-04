@@ -28,6 +28,9 @@
 // Checksum algo
 unsigned short calculate_checksum(unsigned short *paddress, int len);
 
+void listener();
+
+
 // 1. Change SOURCE_IP and DESTINATION_IP to the relevant
 //     for your computer
 // 2. Compile it using MSVC compiler or g++
@@ -53,7 +56,6 @@ unsigned short calculate_checksum(unsigned short *paddress, int len);
 #define PACKET_LEN 1500
 
 int main() {
-    printf("masheoo");
     struct ip iphdr; // IPv4 header
     struct icmp icmphdr; // ICMP-header
     char data[IP_MAXPACKET] = "This is the ping.\n";
@@ -122,7 +124,6 @@ int main() {
     iphdr.ip_sum = 0;
     iphdr.ip_sum = calculate_checksum((unsigned short *) &iphdr, IP4_HDRLEN);
 */
-
 
     //===================
     // ICMP header
@@ -209,34 +210,76 @@ int main() {
     }
 
     char buffer[PACKET_LEN];
+
+
+/*
     // Turn on the promiscuous mode.
 //    mr.mr_type = PACKET_MR_PROMISC;
 //    setsockopt(sock, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mr, sizeof(mr));
 
     // Getting captured packets
-    while (1) {
-        printf("masheoo");
-        int d_s = recv(sock,buffer, PACKET_LEN, 0);
-
+//    while (1) {
+//        int d_s = recv(sock, buffer, PACKET_LEN, 0);
+//
 //        int data_size = recvfrom(sock, buffer, PACKET_LEN, 0, (struct sockaddr *) &dest_in,
 //                                 reinterpret_cast<socklen_t *>(sizeof(dest_in)));
 //        if (data_size) printf("Got one packet\n");
 //       if (d_s)
-           printf("Got one packet\n");
-    }
+//        printf("Got one packet\n");
+//    }
 
     //receive packet
 //    addr_len=sizeof(r_addr);
 //
-//    if (recvfrom(sock, &pckt, sizeof(pckt), 0,(struct sockaddr*)&r_addr, reinterpret_cast<socklen_t *>(&addr_len)) <= 0&& msg_count>1)
-//    {
-//        printf("\nPacket receive failed!\n");
-//    }
 
+//    struct sockaddr_in dest_info;
+//    char *data1 = "UDP message\n";
+//// Step 1: Create a network socket
+//    int sock1 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+//// Step 2: Provide information about destination.
+//    memset((char *) &dest_info, 0, sizeof(dest_info));
+//    dest_info.sin_family = AF_INET;
+//    dest_info.sin_addr.s_addr = inet_addr("8.8.8.8");
+//    dest_info.sin_port = htons(9090);
+//// Step 3: Send out the packet.
+//    sendto(sock1, data1, strlen(data1), 0, (struct sockaddr *) &dest_info, sizeof(dest_info));
+//    close(sock1);
+
+    if (recvfrom(sock, buffer, PACKET_LEN, 0, (struct sockaddr *) &dest_in,
+                 reinterpret_cast<socklen_t *>(sizeof(dest_in)))) {
+        printf("\nPacket receive failed!\n");
+    }
+    */
+    listener();
 
     // Close the raw socket descriptor.
     close(sock);
     return 0;
+}
+
+void listener() {
+    int sd;
+    struct sockaddr_in addr{};
+    unsigned char buf[1024];
+
+    sd = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (sd < 0) {
+        perror("socket");
+        exit(0);
+    }
+    for (;;) {
+        int bytes, len = sizeof(addr);
+
+        bzero(buf, sizeof(buf));
+        bytes = recvfrom(sd, buf, sizeof(buf), 0, (struct sockaddr *) &addr, reinterpret_cast<socklen_t *>(&len));
+//        bytes = recv(sd, buf, sizeof(buf), 0, (struct sockaddr *) &addr, &len);
+
+//        if (bytes > 0)
+//            display(buf, bytes);
+//        else
+//            perror("recvfrom");
+    }
+    exit(0);
 }
 
 // Compute checksum (RFC 1071).
