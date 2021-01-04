@@ -35,7 +35,7 @@ unsigned short calculate_checksum(unsigned short *paddress, int len);
 
 int main() {
     struct icmp icmphdr; // ICMP-header
-    char data[IP_MAXPACKET] = "This is the ping.\n";
+    char data[IP_MAXPACKET] = "This is the ping.";
 
     int datalen = strlen(data) + 1;
 
@@ -67,7 +67,7 @@ int main() {
 
     // Calculate the ICMP header checksum
     icmphdr.icmp_cksum = calculate_checksum((unsigned short *) (packet), ICMP_HDRLEN + datalen);
-    memcpy((packet), &icmphdr, ICMP_HDRLEN);
+    memcpy(packet, &icmphdr, ICMP_HDRLEN);
 
     struct sockaddr_in dest_in;
     memset(&dest_in, 0, sizeof(struct sockaddr_in));
@@ -107,6 +107,15 @@ int main() {
     double dt_milis = dt_micro / 1000.;
     printf("RTT: %f milliseconds\n", dt_milis);
     printf("RTT: %.0f microseconds\n", dt_micro);
+
+
+    char received_icmp[IP_MAXPACKET];
+    memcpy(received_icmp, buffer + IP4_HDRLEN, ICMP_HDRLEN + datalen);
+    printf("Icmp header including tha data received\n");
+
+    char received_icmp_data[IP_MAXPACKET];
+    memcpy(received_icmp_data, buffer + IP4_HDRLEN + ICMP_HDRLEN, datalen);
+    printf("Received data = '%s' \n", received_icmp_data);
 
     // Close the raw socket descriptor.
     close(sock);
