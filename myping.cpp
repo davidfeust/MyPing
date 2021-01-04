@@ -29,7 +29,6 @@
 // Checksum algo
 unsigned short calculate_checksum(unsigned short *paddress, int len);
 
-#define SOURCE_IP "192.168.62.130"
 // i.e the gateway or ping to google.com for their ip-address
 #define DESTINATION_IP "8.8.8.8"
 
