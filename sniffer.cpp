@@ -18,7 +18,6 @@ void filter_icmp_and_print(char *buf);
 int main() {
     int PACKET_LEN = IP_MAXPACKET;
     struct sockaddr saddr;
-    struct packet_mreq mr;
 
     // Create the raw socket with access to all protocols
     int sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
