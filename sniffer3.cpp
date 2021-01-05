@@ -54,7 +54,9 @@ int main() {
 
 //    // Turn on the promiscuous mode.
     mr.mr_type = PACKET_MR_PROMISC;
-    setsockopt(sock, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mr, sizeof(mr));
+    if (setsockopt(sock, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mr, sizeof(mr)) == -1) {
+        perror("promiscuous mode failed\n");
+    }
     printf("mr_type\n");
 
     // Getting captured packets
